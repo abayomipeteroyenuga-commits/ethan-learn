@@ -37,6 +37,28 @@
     return { parts, path: "/" + parts.join("/") };
   }
 
+  const AUTH_REQUIRED_ROUTES = new Set([
+    "course","lesson","practice","learn","my-learning","dashboard",
+    "library","teachers","profile","settings","certificate"
+  ]);
+
+  function isSignedIn() {
+    const p = StorageService.get().profile || {};
+    return !!AuthService.getSession?.() || (!p.local && !!p.userId);
+  }
+
+  function authRedirectTarget() {
+    const raw = (location.hash || "#/").replace(/^#/, "");
+    return raw && raw !== "/" ? raw : "learn";
+  }
+
+  function requireAuthForRoute(route) {
+    if (!AUTH_REQUIRED_ROUTES.has(route) || isSignedIn()) return false;
+    const next = encodeURIComponent(authRedirectTarget());
+    location.replace("#/signin?next=" + next);
+    return true;
+  }
+
   function go(to) {
     location.hash = to.startsWith("#") ? to : "#" + to;
   }
@@ -83,7 +105,7 @@
     <div class="wrap">
       <section class="section">
         <h2>Continue Learning</h2>
-        <div class="grid grid-3" id="continue-grid">${continueCards() || `<div class="empty">No courses in progress yet. Explore a subject to begin.</div>`}</div>
+        <div class="grid grid-3" id="continue-grid">${isSignedIn() ? (continueCards() || `<div class="empty">No courses in progress yet. Explore a subject to begin.</div>`) : `<div class="empty"><strong>Sign in to start learning.</strong><p>Your lessons, practical work and progress are available after sign in.</p><p><a class="btn btn-primary" href="#/signin">Sign In</a> <a class="btn" href="#/account">Create Account</a></p></div>`}</div>
       </section>
       <section class="section">
         <h2>Recommended for You</h2>
@@ -635,7 +657,7 @@
         </div>
 
         <form id="signin-form" class="auth-pane active" data-auth-pane="signin">
-          <h2>Welcome back</h2><p class="meta">Sign in to continue your learning.</p>
+          <h2>Welcome back</h2><p class="meta">Sign in to access lessons, quizzes, practicals, progress and certificates.</p>
           <label class="field">Email<input name="email" type="email" required autocomplete="email" placeholder="you@example.com"></label>
           <label class="field">Password<div class="password-wrap"><input name="password" type="password" required minlength="8" autocomplete="current-password"><button type="button" class="password-toggle" aria-label="Show password">Show</button></div></label>
           <button class="btn btn-primary auth-submit" type="submit">Sign In</button>
@@ -644,7 +666,7 @@
         </form>
 
         <form id="signup-form" class="auth-pane" data-auth-pane="signup">
-          <h2>Create your account</h2><p class="meta">Start free and build your learning record.</p>
+          <h2>Create your account</h2><p class="meta">An account is required before you can start learning on ETHAN Learn.</p>
           <div class="auth-grid-2">
             <label class="field">Display name<input name="name" required maxlength="80" autocomplete="name" placeholder="Your name"></label>
             <label class="field">Learner type<select name="learnerType">${["Primary School","Secondary School","College/University","Professional","Entrepreneur","Teacher","Lifelong Learner"].map(x=>`<option>${x}</option>`).join("")}</select></label>
@@ -660,7 +682,7 @@
           <button class="btn btn-primary auth-submit" type="submit">Create Account</button>
           <div class="auth-message" id="signup-message" role="status"></div>
         </form>
-        <p class="auth-privacy">Your password is handled by Supabase Auth. ETHAN Learn does not store your password in the course data.</p>
+        
       </section>
     </div>`;
   }
@@ -744,6 +766,7 @@
     const start = app.querySelector("#start-course");
     if (start) {
       start.onclick = () => {
+        if(!isSignedIn()){go("/signin?next="+encodeURIComponent("course/"+parts[1]));return;}
         const id = parts[1];
         ProgressService.enroll(id);
         const c = courseById(id);
@@ -899,7 +922,9 @@
       try{
         await AuthService.signIn(signinForm.email.value,signinForm.password.value);
         msg.className="auth-message success";msg.textContent="Signed in successfully. Loading your learning progress…";
-        await CloudSyncService.syncNow();setTimeout(()=>go("/learn"),350);
+        await CloudSyncService.syncNow();
+        const next=new URLSearchParams((location.hash.split("?")[1]||"")).get("next");
+        setTimeout(()=>go(next ? decodeURIComponent(next) : "/learn"),350);
       }catch(err){
         msg.className="auth-message error";
         msg.textContent=(err.message||"Sign in failed").replace("Invalid login credentials","Email or password is incorrect.");
@@ -920,7 +945,9 @@
         });
         if(r.session){
           msg.className="auth-message success";msg.textContent="Account created. Your learning account is ready.";
-          await CloudSyncService.syncNow();setTimeout(()=>go("/learn"),450);
+          await CloudSyncService.syncNow();
+          const next=new URLSearchParams((location.hash.split("?")[1]||"")).get("next");
+          setTimeout(()=>go(next ? decodeURIComponent(next) : "/learn"),450);
         }else{
           msg.className="auth-message success";msg.textContent="Account created. Check your email and confirm your address, then return to sign in.";
           signupForm.reset();
@@ -963,6 +990,7 @@
   function render() {
     const { parts } = parseHash();
     const route = parts[0] || "home";
+    if (requireAuthForRoute(route)) return;
     setActiveNav(route === "learn" ? "learn" : route);
     document.documentElement.classList.toggle("low-data", !!StorageService.get().lowData);
     let html = "";

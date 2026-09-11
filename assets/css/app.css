@@ -395,3 +395,6 @@ body:has(.lesson-body) #narrationBar{display:none!important}
 .password-rules{display:grid;gap:4px;color:#6c7c90;font-size:10.5px;margin:7px 0 12px}.auth-privacy{font-size:10px;color:#7a899a;border-top:1px solid #edf1f6;padding-top:13px;margin-top:18px}.account-ready{text-align:center}.account-avatar{width:76px;height:76px;border-radius:22px;margin:0 auto 12px;display:grid;place-items:center;background:linear-gradient(145deg,#0b3a6e,#28a8ff);color:#fff;font-size:30px;font-weight:900}.auth-actions{display:flex;gap:8px;justify-content:center;margin:18px 0}.auth-shell-single{grid-template-columns:minmax(320px,520px);justify-content:center}.auth-mini-logo{display:block;margin:0 auto 16px}
 @media(max-width:850px){.auth-shell{grid-template-columns:1fr;padding-top:24px}.auth-brand{min-height:390px;padding:28px}.auth-brand h1{font-size:38px}.auth-grid-2{grid-template-columns:1fr}.auth-benefits{grid-template-columns:1fr 1fr}}
 @media(max-width:520px){.auth-shell{padding:12px}.auth-brand{min-height:330px;border-radius:20px;padding:22px}.auth-brand h1{font-size:31px}.auth-card{padding:20px;border-radius:19px}.auth-benefits{grid-template-columns:1fr}}
+
+/* v4.2 account-gated learning */
+.auth-required-note{border-left:4px solid var(--accent,#1263d6);padding-left:12px}
