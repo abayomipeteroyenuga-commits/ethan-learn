@@ -101,7 +101,7 @@ function simultaneous(){
      <li>For word problems, define the unknowns first, form the equations second, solve third, then answer in words.</li>
    </ul>
 
-   <div class="do-now-box"><strong>Do It Now:</strong> Create your own real-life two-variable problem using prices and quantities. Form two equations, solve them, and verify the result in both equations.</div>
+   <div class="do-now-box"><strong>:</strong> Create your own real-life two-variable problem using prices and quantities. Form two equations, solve them, and verify the result in both equations.</div>
  </section>`;
 }
 
@@ -116,7 +116,7 @@ function mathBlock(topic){
    Therefore <strong>x=2 or x=3</strong>. Check each value in the original equation.</div>
    ${questions(["Solve x²−7x+12=0.","Solve x²+x−6=0.","A rectangle has area 48 m² and length is 2 m more than width. Form and solve the quadratic equation."])}
    ${answers(["x=3 or 4.","x=2 or −3.","Let width=w; w(w+2)=48 ⇒ w²+2w−48=0 ⇒ w=6 m, length=8 m."])}
-   <div class="do-now-box"><strong>Do It Now:</strong> Solve one question by factorisation, then verify both roots by substitution.</div>`);
+   <div class="do-now-box"><strong>:</strong> Solve one question by factorisation, then verify both roots by substitution.</div>`);
  if(t.includes("percentage") || t.includes("percent")) return box("Worked mathematics — percentages",`
    <p>A percentage means “out of 100”. Convert p% to a fraction or decimal before calculating: p% = p/100.</p>
    <div class="worked-example"><strong>Example:</strong> Find 15% of ₦8,000.<br>15/100 × 8000 = <strong>₦1,200</strong>.<br>
@@ -129,7 +129,7 @@ function mathBlock(topic){
    <div class="worked-example"><strong>Example:</strong> 2/3 + 1/4. LCM of 3 and 4 is 12. So 2/3=8/12 and 1/4=3/12. Total = <strong>11/12</strong>.</div>
    ${questions(["1/2 + 1/3","3/4 − 1/6","2/5 × 15/4","A family uses 3/8 of a bag of rice on Monday and 1/4 on Tuesday. What fraction was used altogether?"])}
    ${answers(["5/6","7/12","3/2 or 1½","5/8"])}
-   <div class="do-now-box"><strong>Do It Now:</strong> Draw a fraction model for one answer, then solve it numerically.</div>`);
+   <div class="do-now-box"><strong>:</strong> Draw a fraction model for one answer, then solve it numerically.</div>`);
  return `
  <section class="deep-teaching-feature math-lesson-structure">
    <div class="deep-kicker">MATHEMATICS • ${esc(topic)}</div>
@@ -194,42 +194,42 @@ function financeBlock(topic){
    <p>For ${esc(topic)}, move from the definition to the actual document, calculation, entry or business decision it affects.</p>
    <div class="worked-example"><strong>Worked process:</strong> Identify the transaction/problem → identify the accounts or quantities affected → apply the correct rule → calculate/record → check that totals and evidence agree.</div>
    ${questions([`Explain ${esc(topic)} to a new business owner in two sentences.`,`Create one realistic transaction or business example and show how it is treated step by step.`,`Prepare the relevant calculation, journal-style entry, schedule or decision table.`,`Change one figure in your example and recalculate the result.`,`State two errors or control risks and how to prevent them.`])}
-   <div class="do-now-box"><strong>Do It Now:</strong> Build a small five-transaction case for a fictional business, process it using this topic, and keep your workings as practical evidence.</div>`);
+   <div class="do-now-box"><strong>:</strong> Build a small five-transaction case for a fictional business, process it using this topic, and keep your workings as practical evidence.</div>`);
 }
 function digitalBlock(topic){
  return box("Build it, test it, improve it",`
    <p>Digital skill is learned by producing an output. For <strong>${esc(topic)}</strong>, follow the lesson once, then reproduce the result without copying the steps.</p>
    <div class="worked-example"><strong>Professional workflow:</strong> define the output → build a minimum working version → test it → identify one failure/weakness → fix it → test again → save evidence of the final result.</div>
    ${questions([`What should a correct output for ${esc(topic)} do?`,`Build the smallest working example you can.`,`Test it with normal input and one unusual input.`,`Deliberately create one error, diagnose it, then fix it.`,`Improve usability, accuracy, accessibility, security or presentation and explain the change.`])}
-   <div class="do-now-box"><strong>Do It Now:</strong> Produce a file, screenshot, code sample, spreadsheet, design, report or working demo. Your evidence should show both the first version and the improved version.</div>`);
+   <div class="do-now-box"><strong>:</strong> Produce a file, screenshot, code sample, spreadsheet, design, report or working demo. Your evidence should show both the first version and the improved version.</div>`);
 }
 function literatureBlock(topic){
  return box("Read, analyse, support, write",`
    <p>Literature is not mastered by memorising definitions. For ${esc(topic)}, move from <strong>observation → evidence → interpretation → effect → judgement</strong>.</p>
    <div class="worked-example"><strong>Original mini-example:</strong> “At dawn, the empty road kept yesterday's footprints.” A learner might identify imagery and contrast, then explain how “dawn” suggests a new beginning while “yesterday's footprints” keep the past present. The important part is explaining the effect, not merely naming a device.</div>
    ${questions([`Explain the key literary idea in ${esc(topic)}.`,`Using a short teacher-provided or public-domain passage, identify two relevant features and explain their effects.`,`Write one paragraph using Point → Evidence → Explanation → Link.`,`Give a second reasonable interpretation and support it.`,`Write a short exam-style response with an introduction, two developed points and conclusion.`])}
-   <div class="do-now-box"><strong>Do It Now:</strong> Create a short original paragraph, poem or dramatic exchange that demonstrates the technique, then annotate your own choices.</div>`);
+   <div class="do-now-box"><strong>:</strong> Create a short original paragraph, poem or dramatic exchange that demonstrates the technique, then annotate your own choices.</div>`);
 }
 function businessBlock(topic){
  return box("Case → decision → action",`
    <p>For ${esc(topic)}, learn the concept and then use it to make a defensible business decision.</p>
    <div class="worked-example"><strong>Worked case method:</strong> define the objective → separate facts from assumptions → identify options → compare cost/benefit/risk → choose → define a measurable success indicator.</div>
    ${questions([`Define ${esc(topic)} and explain why a manager or entrepreneur needs it.`,`Create a realistic small-business case where this topic matters.`,`List three possible actions and compare their advantages, disadvantages and risks.`,`Choose one action and justify it with evidence or calculations.`,`State two KPIs you would monitor after implementation.`])}
-   <div class="do-now-box"><strong>Do It Now:</strong> Apply this topic to a fictional school, shop or digital business. Produce a one-page decision note with problem, evidence, options, decision and KPI.</div>`);
+   <div class="do-now-box"><strong>:</strong> Apply this topic to a fictional school, shop or digital business. Produce a one-page decision note with problem, evidence, options, decision and KPI.</div>`);
 }
 function languageBlock(topic){
  return box("See it → use it → improve it",`
    <p>Understanding ${esc(topic)} means being able to recognise it, explain it and use it correctly in your own communication.</p>
    <div class="worked-example"><strong>Model process:</strong> read a short example → identify the feature → explain why it works → rewrite it in a different context → edit for clarity, grammar, tone and purpose.</div>
    ${questions([`Explain ${esc(topic)} in your own words.`,`Write three correct examples of it.`,`Write one incorrect example, then correct and explain the error.`,`Use the skill in a short paragraph, message, speech or report.`,`Edit your work once for meaning and once for language accuracy.`])}
-   <div class="do-now-box"><strong>Do It Now:</strong> Produce 120–200 words that deliberately uses today's skill. Read it aloud, edit weak sentences, and save the improved version.</div>`);
+   <div class="do-now-box"><strong>:</strong> Produce 120–200 words that deliberately uses today's skill. Read it aloud, edit weak sentences, and save the improved version.</div>`);
 }
 function genericBlock(topic){
  return box("Learn by doing",`
    <p>Now move beyond the theory of <strong>${esc(topic)}</strong>. Explain the idea in your own words, study a realistic example, perform the skill yourself, then evaluate the result.</p>
    <div class="worked-example"><strong>Model:</strong> Problem → relevant concept → steps → result → check → improvement.</div>
    ${questions([`What does ${esc(topic)} mean, and why does it matter?`,`Give a realistic example and explain it step by step.`,`Complete a practical task that applies the idea.`,`Change one condition in your example. What changes and why?`,`What mistake is most likely, and how would you detect or correct it?`])}
-   <div class="do-now-box"><strong>Do It Now:</strong> Create a real output or written solution. Keep evidence, compare it with the lesson criteria, improve it once, then write a two-sentence reflection.</div>`);
+   <div class="do-now-box"><strong>:</strong> Create a real output or written solution. Keep evidence, compare it with the lesson criteria, improve it once, then write a two-sentence reflection.</div>`);
 }
 
 function enrichment(course,lesson){

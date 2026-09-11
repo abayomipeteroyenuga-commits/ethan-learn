@@ -332,7 +332,7 @@
         container.innerHTML = `<div class="card"><h3>Score: ${pct}%</h3>
           <p>${score} of ${questions.length} correct.</p>
           <p><strong>${pct>=80?"Mastery level: Strong":pct>=60?"Mastery level: Developing":"Mastery level: Foundation practice needed"}</strong></p>
-          <p>${pct < 60 ? "Review the lesson, use the hint and Do It Now task, then retry." : pct < 80 ? "Good start. Retry until you can explain why each answer is correct." : "Strong recall. Complete the practical evidence before moving on."}</p>
+          <p>${pct < 60 ? "Review the lesson, use the hint and  task, then retry." : pct < 80 ? "Good start. Retry until you can explain why each answer is correct." : "Strong recall. Complete the practical evidence before moving on."}</p>
           <button class="btn" id="retry-q">Retry</button></div>`;
         container.querySelector("#retry-q").onclick = () => { i = 0; score = 0; answers.length = 0; show(); };
         return;

@@ -67,7 +67,7 @@ function makeCourse(stream,subject,title,index){
   prerequisites:["Curiosity and willingness to practise"],
   modules:[
    {id:prefix+"-m1",title:"Foundations & Core Ideas",lessons:[
-    L(prefix+"-l1",`What ${title} Means`,22,`<h2>${st}: Meaning and Scope</h2><p>${T.overview}</p><h3>Study questions</h3><ul><li>What is the field trying to understand or achieve?</li><li>What vocabulary must a learner know?</li><li>Where is this knowledge used?</li></ul><div class="kp"><strong>Do it now</strong><p>Write a three-sentence explanation of ${st} in your own words and list five important terms.</p></div>`,
+    L(prefix+"-l1",`What ${title} Means`,22,`<h2>${st}: Meaning and Scope</h2><p>${T.overview}</p><h3>Study questions</h3><ul><li>What is the field trying to understand or achieve?</li><li>What vocabulary must a learner know?</li><li>Where is this knowledge used?</li></ul><div class="kp"><strong></strong><p>Write a three-sentence explanation of ${st} in your own words and list five important terms.</p></div>`,
       [Q(prefix+"-q1",`Which action best starts real learning in ${title}?`,["Understand the meaning and key terms","Memorise a title only","Skip examples","Avoid practice"],0,"Understanding the field and its language gives later work a strong foundation.")]),
     L(prefix+"-l2","Core Concepts and Vocabulary",24,`<h2>Core concepts</h2><p>Build a concept map for ${st}. Group ideas into definitions, principles, methods, applications and common errors.</p><h3>Work it out</h3><p>Choose six terms. Define each one, connect it to another term and give a short example.</p>`,
       [Q(prefix+"-q2","A strong concept map should:",["Show relationships between ideas","List random words only","Avoid examples","Remove key terms"],0,"Concept maps are useful because they show how ideas relate.")]),
@@ -83,7 +83,7 @@ function makeCourse(stream,subject,title,index){
       [Q(prefix+"-q6","The best response to an error is to:",["Find the cause, correct it and learn from it","Hide it","Repeat it","Delete all evidence"],0,"Error analysis improves mastery.")])
    ]},
    {id:prefix+"-m3",title:"Practical Studio / Lab / Casework",lessons:[
-    L(prefix+"-l7","Do It Now — Guided Practical",35,`<h2>Do It Now</h2><p>${T.practical}</p><h3>Evidence checklist</h3><ul><li>Objective</li><li>Method or process</li><li>Working / observations / draft</li><li>Final result</li><li>Self-check</li></ul>`,
+    L(prefix+"-l7"," — Guided Practical",35,`<p>${T.practical}</p><h3>Evidence checklist</h3><ul><li>Objective</li><li>Method or process</li><li>Working / observations / draft</li><li>Final result</li><li>Self-check</li></ul>`,
       [Q(prefix+"-q7","Strong practical evidence includes:",["Process and checked result","Only the lesson title","A copied sentence","No record of work"],0,"Practical evidence shows both the process and the result.")]),
     L(prefix+"-l8","Independent Work",45,`<h2>Independent Work</h2><p>${T.apply}</p><p>Complete the task without following the lesson word-for-word. Keep your working and write a short note about what you changed or improved.</p>`,
       [Q(prefix+"-q8","Independent work should:",["Use learning in a new task","Copy the model exactly","Avoid decisions","Skip reflection"],0,"Independence means making and justifying your own decisions.")]),

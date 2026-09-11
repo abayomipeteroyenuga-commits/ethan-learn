@@ -434,3 +434,5 @@ body:has(.lesson-body) #narrationBar{display:none!important}
 .formula-strip{margin:14px 0;padding:13px 15px;border-radius:12px;background:#f5f8fc;border:1px solid #dbe5ef}
 .practice-bank li{margin:11px 0;line-height:1.65}.practice-solutions{margin-top:18px;padding:14px;border:1px solid #dbe5ef;border-radius:12px;background:#fbfdff}
 .practice-solutions summary{font-weight:800;cursor:pointer}.solution{padding:9px 0;border-bottom:1px solid #edf1f5}.solution:last-child{border-bottom:0}
+
+.academic-lecture-note{margin:18px 0;padding:22px;border:1px solid rgba(15,23,42,.12);border-radius:18px;background:#fff;line-height:1.72}.academic-lecture-note h3{margin-top:22px}.academic-kicker{font-size:.75rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;opacity:.68}@media(max-width:640px){.academic-lecture-note{padding:16px}}

@@ -59,20 +59,7 @@ function task(c,l){
 }
 function render(c,l){
  const t=task(c,l),done=!!read()[key(c,l)];
- return `<section class="do-it-now" data-practical-key="${esc(key(c,l))}">
-   <div class="din-head"><div><span class="eyebrow">ACTIVE LEARNING</span><h2>Do It Now</h2></div><span class="din-state">${done?"Evidence saved ✓":"Not completed yet"}</span></div>
-   <p class="din-main">${esc(t.doNow)}</p>
-   <div class="din-grid">
-     <article><b>Work it out</b><p>${esc(t.work)}</p></article>
-     <article><b>Stretch challenge</b><p>${esc(t.stretch)}</p></article>
-     <article><b>Evidence to keep</b><p>${esc(t.evidence)}</p></article>
-   </div>
-   <label class="din-reflect">Quick reflection<textarea rows="3" data-practical-reflection placeholder="What did you do, what was difficult, and what did you improve?"></textarea></label>
-   <div class="din-actions">
-     <button type="button" class="btn btn-primary" data-practical-done>${done?"Practical evidence saved ✓":"Mark practical evidence saved"}</button>
-     <button type="button" class="btn" data-practical-reset>Reset</button>
-   </div>
- </section>`;
+ return ``;
 }
 function attach(root=document){
  root.querySelectorAll("[data-practical-key]").forEach(box=>{

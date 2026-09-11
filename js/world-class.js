@@ -37,7 +37,7 @@ function enhanceHome(){
   strip.innerHTML=`
     <div><strong>${courses.length}+</strong><span>courses</span></div>
     <div><strong>${lessons.toLocaleString()}+</strong><span>guided lessons</span></div>
-    <div><strong>Do It Now</strong><span>practice in every lesson</span></div>
+    <div><strong></strong><span>practice in every lesson</span></div>
     <div><strong>Mastery</strong><span>hints, quizzes & evidence</span></div>
     <div><strong>Learn anywhere</strong><span>PWA & lesson audio</span></div>`;
   wrap.prepend(strip);
@@ -57,7 +57,7 @@ function enhanceHome(){
   why.innerHTML=`<div class="section-head"><div><span class="eyebrow">WHY ETHAN LEARN</span><h2>Built for learning, not endless scrolling</h2></div></div>
   <div class="why-grid">
     <article><b>Learn it</b><p>Structured lessons and complete topic maps, not scattered search results.</p></article>
-    <article><b>Do it now</b><p>Every lesson turns into a practical task, worked problem, studio activity, case or mini investigation.</p></article>
+    <article><b></b><p>Every lesson turns into a practical task, worked problem, studio activity, case or mini investigation.</p></article>
     <article><b>Get unstuck</b><p>Hints, explanations, notes, bookmarks, flashcards and ASK ETHAN support your next step.</p></article>
     <article><b>Prove mastery</b><p>Quizzes, projects, assignments and practical evidence show what you can actually do.</p></article>
     <article><b>Track growth</b><p>Progress, XP, streaks, recent activity and portfolio evidence make learning visible.</p></article>
