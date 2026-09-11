@@ -12,6 +12,11 @@ function safeSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
 let language=safeGet("ethan_voice_lang","en-NG");
 let preferredVoice=safeGet("ethan_tts_voice","");
 let rate=Math.max(.75,Math.min(1.25,Number(safeGet("ethan_tts_rate","0.95"))||.95));
+let followInstructor=safeGet("ethan_follow_instructor","1")!=="0";
+let followSegments=[];
+let activeFollowEl=null;
+let manualFollowPauseUntil=0;
+
 
 function toast(m){try{window.ETHAN?.toast?.(m)}catch(e){console.log("[ETHAN Voice]",m)}}
 function clean(s){return String(s||"").replace(/\s+/g," ").replace(/https?:\/\/\S+/gi," ").trim()}
@@ -63,15 +68,68 @@ function splitText(text){
   if(buf)out.push(buf);
   return out.slice(0,80);
 }
-function currentLessonText(){
+function clearFollowHighlight(){
+  try{activeFollowEl?.classList?.remove("ethan-speaking-now")}catch(e){}
+  activeFollowEl=null;
+}
+function readableLessonElements(){
   const body=document.querySelector(".lesson-body");
-  if(!body)return "";
-  const clone=body.cloneNode(true);
-  clone.querySelectorAll("button,a,nav,aside,script,style,.nav-lesson,#quiz-box,.learning-journey,.lesson-listen-panel").forEach(n=>n.remove());
-  const title=clean(clone.querySelector("h1")?.innerText||"");
-  const html=clone.querySelector(".lesson-html");
-  const text=clean(html?.innerText||clone.innerText||"");
-  return clean((title?title+". ":"")+text);
+  if(!body)return [];
+  const title=body.querySelector("h1");
+  const lesson=body.querySelector(".lesson-html");
+  const nodes=[];
+  if(title)nodes.push(title);
+  if(lesson){
+    const candidates=[...lesson.querySelectorAll("h2,h3,h4,p,li,.math-line,.worked-example > p,.do-now-box,td,th")];
+    const seen=new Set();
+    for(const el of candidates){
+      if(seen.has(el))continue;
+      // Skip nested nodes if a closer semantic candidate already represents same line only when empty.
+      const t=clean(el.innerText||el.textContent||"");
+      if(!t)continue;
+      seen.add(el);nodes.push(el);
+    }
+  }
+  return nodes;
+}
+function buildFollowSegments(){
+  const els=readableLessonElements();
+  const out=[];
+  for(const el of els){
+    const text=clean(el.innerText||el.textContent||"");
+    if(!text)continue;
+    const parts=splitText(text);
+    if(parts.length){
+      parts.forEach(part=>out.push({text:part,el}));
+    }else out.push({text,el});
+  }
+  return out.slice(0,500);
+}
+function currentLessonText(){
+  return buildFollowSegments().map(x=>x.text).join(" ");
+}
+function shouldAutoFollow(){
+  return followInstructor && Date.now()>=manualFollowPauseUntil;
+}
+function focusFollowSegment(i){
+  clearFollowHighlight();
+  const seg=followSegments[i];
+  if(!seg?.el)return;
+  activeFollowEl=seg.el;
+  seg.el.classList.add("ethan-speaking-now");
+  if(shouldAutoFollow()){
+    try{seg.el.scrollIntoView({behavior:"smooth",block:"center",inline:"nearest"})}catch(e){}
+  }
+}
+function setFollowInstructor(v){
+  followInstructor=!!v;
+  safeSet("ethan_follow_instructor",followInstructor?"1":"0");
+  document.querySelectorAll("[data-follow-instructor]").forEach(x=>{
+    if(x.type==="checkbox")x.checked=followInstructor;
+    x.setAttribute("aria-pressed",followInstructor?"true":"false");
+  });
+  if(!followInstructor)clearFollowHighlight();
+  updatePlayer();
 }
 function updatePlayer(){
   document.querySelectorAll("[data-listen-status]").forEach(el=>{
@@ -86,19 +144,25 @@ function updatePlayer(){
     bar.style.width=pct+"%";
   });
   document.querySelectorAll("[data-voice-status]").forEach(x=>x.textContent=commandsEnabled?"Voice commands on":"Voice commands off");
+  document.querySelectorAll("[data-follow-instructor]").forEach(x=>{
+    if(x.type==="checkbox")x.checked=followInstructor;
+    x.setAttribute("aria-pressed",followInstructor?"true":"false");
+  });
+  document.querySelectorAll("[data-follow-status]").forEach(x=>x.textContent=followInstructor?"Following instructor":"Auto-follow off");
 }
 function stopSpeech(){
   try{synth?.cancel?.()}catch(e){}
-  speaking=false;paused=false;chunks=[];chunkIndex=0;currentUtterance=null;updatePlayer();
+  speaking=false;paused=false;chunks=[];followSegments=[];chunkIndex=0;currentUtterance=null;clearFollowHighlight();updatePlayer();
 }
 function speakChunk(){
   if(!speaking||paused)return;
   if(chunkIndex>=chunks.length){
-    speaking=false;paused=false;currentUtterance=null;updatePlayer();toast("Lesson audio complete");return;
+    speaking=false;paused=false;currentUtterance=null;clearFollowHighlight();updatePlayer();toast("Lesson audio complete");return;
   }
   if(!synth||typeof SpeechSynthesisUtterance==="undefined"){
     speaking=false;updatePlayer();toast("Your browser does not support text-to-speech.");return;
   }
+  focusFollowSegment(chunkIndex);
   const u=new SpeechSynthesisUtterance(chunks[chunkIndex]);
   u.lang=language;u.rate=rate;u.pitch=1;u.volume=1;
   const v=chooseVoice();if(v)u.voice=v;
@@ -112,10 +176,11 @@ function speakChunk(){
   try{synth.speak(u)}catch(e){speaking=false;updatePlayer();toast("Voice playback could not start.")}
 }
 function listenLesson(){
-  const text=currentLessonText();
-  if(!text){toast("Open a lesson first.");return false}
+  followSegments=buildFollowSegments();
+  if(!followSegments.length){toast("Open a lesson first.");return false}
   try{synth?.cancel?.()}catch(e){}
-  chunks=splitText(text);chunkIndex=0;paused=false;speaking=true;updatePlayer();speakChunk();return true;
+  chunks=followSegments.map(x=>x.text);
+  chunkIndex=0;paused=false;speaking=true;updatePlayer();speakChunk();return true;
 }
 function pauseSpeech(){if(!speaking||paused)return;try{synth?.pause?.()}catch(e){}paused=true;updatePlayer()}
 function resumeSpeech(){if(!speaking){listenLesson();return}try{synth?.resume?.()}catch(e){}paused=false;updatePlayer()}
@@ -123,6 +188,7 @@ function toggleSpeech(){if(speaking&&!paused)pauseSpeech();else if(speaking&&pau
 function speakText(text){
   text=clean(text);if(!text)return false;
   try{synth?.cancel?.()}catch(e){}
+  followSegments=[];
   chunks=splitText(text);chunkIndex=0;paused=false;speaking=true;updatePlayer();speakChunk();return true;
 }
 function setLanguage(v){language=v||"en-NG";safeSet("ethan_voice_lang",language);if(recognition)recognition.lang=language;updatePlayer()}
@@ -182,13 +248,18 @@ function toggleCommands(){commandsEnabled?disableCommands():enableCommands()}
 document.addEventListener("click",e=>{
   if(e.target.closest("[data-listen-play]")){e.preventDefault();toggleSpeech();return}
   if(e.target.closest("[data-listen-stop]")){e.preventDefault();stopSpeech();return}
+  if(e.target.closest("[data-follow-instructor]") && e.target.type!=="checkbox"){e.preventDefault();setFollowInstructor(!followInstructor);return}
   if(e.target.closest("[data-voice-toggle],#settings-voice-toggle,#voiceFab")){e.preventDefault();toggleCommands();return}
   if(e.target.closest("#voice-stop-speaking")){e.preventDefault();stopSpeech();return}
 });
 document.addEventListener("change",e=>{
   if(e.target.matches("[data-listen-voice]"))setVoice(e.target.value);
   if(e.target.matches("[data-listen-rate]"))setRate(e.target.value);
+  if(e.target.matches("[data-follow-instructor]") && e.target.type==="checkbox")setFollowInstructor(e.target.checked);
 });
+["wheel","touchstart","pointerdown"].forEach(evt=>window.addEventListener(evt,e=>{
+  if(speaking && e.isTrusted) manualFollowPauseUntil=Date.now()+8000;
+},{passive:true}));
 window.addEventListener("hashchange",stopSpeech);
 window.addEventListener("ethan:rendered",()=>{loadVoices();updatePlayer();updateCommands()});
 document.addEventListener("visibilitychange",()=>{if(document.hidden){try{recognition?.abort?.()}catch(e){}}else if(commandsEnabled)setTimeout(startListening,300)});

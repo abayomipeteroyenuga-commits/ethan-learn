@@ -286,6 +286,10 @@
             <button class="btn btn-primary" type="button" data-listen-play>▶ Listen to Lesson</button>
             <button class="btn" type="button" data-listen-stop>■ Stop</button>
           </div>
+          <label class="follow-instructor-control">
+            <input type="checkbox" data-follow-instructor checked />
+            <span><strong>Follow Instructor</strong><small data-follow-status>Following instructor</small></span>
+          </label>
           <div class="field"><label>Reading speed
             <select data-listen-rate>
               <option value="0.82">Slow</option><option value="0.95" selected>Normal</option><option value="1.08">Fast</option><option value="1.2">Faster</option>

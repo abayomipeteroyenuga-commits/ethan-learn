@@ -398,3 +398,39 @@ body:has(.lesson-body) #narrationBar{display:none!important}
 
 /* v4.2 account-gated learning */
 .auth-required-note{border-left:4px solid var(--accent,#1263d6);padding-left:12px}
+
+/* v4.3 Deep Teaching */
+.deep-teaching-feature,.deep-card{margin:24px 0;padding:22px;border:1px solid #d9e4f2;border-radius:18px;background:#fff;box-shadow:0 8px 28px rgba(11,58,110,.06)}
+.deep-teaching-feature{border-top:5px solid #0b63ce}
+.deep-kicker{font-size:.78rem;font-weight:900;letter-spacing:.12em;color:#0b63ce;margin-bottom:8px}
+.worked-example{margin:14px 0;padding:16px;border-radius:14px;background:#f3f8ff;border-left:4px solid #0b63ce;line-height:1.75}
+.math-line{font-size:1.08rem;font-weight:750;line-height:1.9;padding:8px 12px;background:#f8fafc;border-radius:10px}
+.deep-questions{padding-left:24px}.deep-questions li{margin:10px 0;line-height:1.55}
+.deep-answers{margin:14px 0;padding:12px 14px;border:1px solid #d9e4f2;border-radius:12px;background:#fbfdff}
+.deep-answers summary{cursor:pointer;font-weight:800;color:#0b3a6e}
+.do-now-box{margin-top:16px;padding:16px;border-radius:14px;background:#fff8df;border:1px solid #f1d36a;line-height:1.6}
+
+.math-lesson-structure h3{margin-top:22px;color:#0b3a6e}
+.math-lesson-structure .deep-kicker{background:#eaf3ff;display:inline-block;padding:6px 10px;border-radius:999px}
+.math-lesson-structure .worked-example{font-family:inherit}
+
+/* v4.5 Reasoning & Calculation Subjects */
+.reasoning-lab{margin:24px 0;padding:22px;border:1px solid #d6e3f2;border-top:5px solid #123e72;border-radius:18px;background:#fff;box-shadow:0 8px 26px rgba(11,58,110,.06)}
+.reasoning-lab h3{margin-top:22px;color:#0b3a6e}.reasoning-questions li{margin:10px 0;line-height:1.6}
+.reasoning-answers{margin:14px 0;padding:12px;border:1px solid #d6e3f2;border-radius:12px;background:#f8fbff}
+
+/* v4.6 Follow Instructor */
+.follow-instructor-control{display:flex;align-items:center;gap:10px;margin:12px 0;padding:10px 12px;border:1px solid var(--border);border-radius:12px;background:#f8fbff;cursor:pointer}
+.follow-instructor-control input{width:18px;height:18px;accent-color:var(--accent)}
+.follow-instructor-control span{display:flex;flex-direction:column;line-height:1.25}
+.follow-instructor-control small{color:var(--muted);font-size:12px;margin-top:2px}
+.ethan-speaking-now{position:relative;background:#fff4bf!important;border-radius:8px;box-shadow:0 0 0 3px rgba(21,101,192,.16);transition:background .2s ease,box-shadow .2s ease}
+.lesson-html .ethan-speaking-now{scroll-margin-top:110px}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}.ethan-speaking-now{transition:none}}
+
+/* v4.7 Practice Intensive */
+.intensive-practice{margin:28px 0;padding:22px;border:1px solid #cfdceb;border-top:6px solid #0b3a6e;border-radius:18px;background:#fff;box-shadow:0 8px 28px rgba(11,58,110,.07)}
+.practice-badge{display:inline-block;padding:5px 9px;border-radius:999px;background:#e8f1fb;color:#0b3a6e;font-weight:900;font-size:12px;letter-spacing:.08em}
+.formula-strip{margin:14px 0;padding:13px 15px;border-radius:12px;background:#f5f8fc;border:1px solid #dbe5ef}
+.practice-bank li{margin:11px 0;line-height:1.65}.practice-solutions{margin-top:18px;padding:14px;border:1px solid #dbe5ef;border-radius:12px;background:#fbfdff}
+.practice-solutions summary{font-weight:800;cursor:pointer}.solution{padding:9px 0;border-bottom:1px solid #edf1f5}.solution:last-child{border-bottom:0}
