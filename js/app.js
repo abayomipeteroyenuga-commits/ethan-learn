@@ -601,19 +601,84 @@
   }
 
   function viewAuth() {
-    const cloud = AuthService.configured;
-    return `<div class="wrap"><div class="card" style="max-width:460px;margin:20px auto">
-      <h1>${cloud ? "ETHAN Learn Account" : "Local Learning Profile"}</h1>
-      <p class="meta">${cloud ? "Sign in to sync learning progress securely across your devices." : "Cloud accounts are ready in the code but need your Supabase project URL and publishable key in config.js."}</p>
-      ${cloud ? `<form id="auth-form">
-        <div class="field"><label>Display name <input name="name" placeholder="Your name"></label></div>
-        <div class="field"><label>Email <input name="email" type="email" required autocomplete="email"></label></div>
-        <div class="field"><label>Password <input name="password" type="password" required minlength="8" autocomplete="current-password"></label></div>
-        <p><button class="btn btn-primary" name="action" value="signin" type="submit">Sign In</button> <button class="btn" name="action" value="signup" type="submit">Create Account</button></p>
-        <button class="btn btn-ghost" type="button" id="forgot-password">Forgot password?</button>
-      </form>` : `<form id="auth-form"><div class="field"><label>Name <input name="name" required placeholder="Your name"></label></div><button class="btn btn-primary" type="submit">Continue locally</button></form>`}
-      <p><a href="#/">Back home</a></p>
-    </div></div>`;
+    const p=StorageService.get().profile;
+    const signedIn=!!AuthService.getSession?.() || (!p.local && !!p.userId);
+    if(signedIn){
+      return `<div class="auth-shell"><section class="auth-brand">
+        <img src="assets/ethan-learn-wordmark.svg" alt="ETHAN Learn" class="auth-wordmark">
+        <div><span class="eyebrow">YOUR LEARNING ACCOUNT</span><h1>Welcome back, ${esc(p.name||"Learner")}</h1>
+        <p>Your account is connected. Progress, notes, bookmarks and learning records can sync securely across devices.</p></div>
+      </section>
+      <section class="auth-card account-ready">
+        <div class="account-avatar">${esc((p.name||"L").slice(0,1).toUpperCase())}</div>
+        <h2>${esc(p.name||"Learner")}</h2><p>${esc(p.email||"")}</p>
+        <div class="auth-actions"><a class="btn btn-primary" href="#/learn">Continue Learning</a><a class="btn" href="#/profile">Profile</a></div>
+        <button class="btn btn-ghost" id="account-signout" type="button">Sign Out</button>
+      </section></div>`;
+    }
+    return `<div class="auth-shell">
+      <section class="auth-brand">
+        <img src="assets/ethan-learn-wordmark.svg" alt="ETHAN Learn" class="auth-wordmark">
+        <div>
+          <span class="eyebrow">LEARN • PRACTICE • GROW</span>
+          <h1>Your learning continues wherever you sign in.</h1>
+          <p>Create one ETHAN Learn account to keep your course progress, quiz results, notes, bookmarks and learning evidence together.</p>
+          <div class="auth-benefits">
+            <span>✓ Cloud progress sync</span><span>✓ Continue across devices</span><span>✓ Saved courses & notes</span><span>✓ Practical evidence</span>
+          </div>
+        </div>
+      </section>
+      <section class="auth-card">
+        <div class="auth-tabs" role="tablist">
+          <button type="button" class="auth-tab active" data-auth-tab="signin">Sign In</button>
+          <button type="button" class="auth-tab" data-auth-tab="signup">Create Account</button>
+        </div>
+
+        <form id="signin-form" class="auth-pane active" data-auth-pane="signin">
+          <h2>Welcome back</h2><p class="meta">Sign in to continue your learning.</p>
+          <label class="field">Email<input name="email" type="email" required autocomplete="email" placeholder="you@example.com"></label>
+          <label class="field">Password<div class="password-wrap"><input name="password" type="password" required minlength="8" autocomplete="current-password"><button type="button" class="password-toggle" aria-label="Show password">Show</button></div></label>
+          <button class="btn btn-primary auth-submit" type="submit">Sign In</button>
+          <button class="btn btn-ghost forgot-link" type="button" id="forgot-password">Forgot password?</button>
+          <div class="auth-message" id="signin-message" role="status"></div>
+        </form>
+
+        <form id="signup-form" class="auth-pane" data-auth-pane="signup">
+          <h2>Create your account</h2><p class="meta">Start free and build your learning record.</p>
+          <div class="auth-grid-2">
+            <label class="field">Display name<input name="name" required maxlength="80" autocomplete="name" placeholder="Your name"></label>
+            <label class="field">Learner type<select name="learnerType">${["Primary School","Secondary School","College/University","Professional","Entrepreneur","Teacher","Lifelong Learner"].map(x=>`<option>${x}</option>`).join("")}</select></label>
+          </div>
+          <label class="field">Email<input name="email" type="email" required autocomplete="email" placeholder="you@example.com"></label>
+          <div class="auth-grid-2">
+            <label class="field">Level<select name="level"><option>Beginner</option><option>Intermediate</option><option>Advanced</option></select></label>
+            <label class="field">Goal<select name="goal"><option>School</option><option>Career</option><option>Business</option><option>Certification</option><option>Personal development</option></select></label>
+          </div>
+          <label class="field">Password<div class="password-wrap"><input name="password" type="password" required minlength="8" autocomplete="new-password"><button type="button" class="password-toggle" aria-label="Show password">Show</button></div></label>
+          <label class="field">Confirm password<div class="password-wrap"><input name="confirmPassword" type="password" required minlength="8" autocomplete="new-password"><button type="button" class="password-toggle" aria-label="Show password">Show</button></div></label>
+          <div class="password-rules"><span>Use at least 8 characters.</span><span>Do not reuse a password from another account.</span></div>
+          <button class="btn btn-primary auth-submit" type="submit">Create Account</button>
+          <div class="auth-message" id="signup-message" role="status"></div>
+        </form>
+        <p class="auth-privacy">Your password is handled by Supabase Auth. ETHAN Learn does not store your password in the course data.</p>
+      </section>
+    </div>`;
+  }
+
+  function viewResetPassword(){
+    return `<div class="auth-shell auth-shell-single">
+      <section class="auth-card">
+        <img src="assets/ethan-learn-logo.svg" width="58" height="58" alt="" class="auth-mini-logo">
+        <h1>Set a new password</h1>
+        <p class="meta">Choose a new password for your ETHAN Learn account.</p>
+        <form id="reset-password-form">
+          <label class="field">New password<div class="password-wrap"><input name="password" type="password" required minlength="8" autocomplete="new-password"><button type="button" class="password-toggle">Show</button></div></label>
+          <label class="field">Confirm password<div class="password-wrap"><input name="confirmPassword" type="password" required minlength="8" autocomplete="new-password"><button type="button" class="password-toggle">Show</button></div></label>
+          <button class="btn btn-primary auth-submit" type="submit">Update Password</button>
+          <div class="auth-message" id="reset-message" role="status"></div>
+        </form>
+      </section>
+    </div>`;
   }
 
   function afterRender(route, parts) {
@@ -779,16 +844,16 @@
       render();
     });
     const pf = app.querySelector("#prof-form");
-    if (pf) pf.addEventListener("submit", (e) => {
+    if (pf) pf.addEventListener("submit", async (e) => {
       e.preventDefault();
+      const meta={name:pf.name.value.trim(),learnerType:pf.learnerType.value,level:pf.level.value,goal:pf.goal.value};
       StorageService.update((st) => {
-        st.profile.name = pf.name.value;
-        st.profile.learnerType = pf.learnerType.value;
-        st.profile.role = pf.role.value;
-        st.profile.level = pf.level.value;
-        st.profile.goal = pf.goal.value;
+        st.profile.name=meta.name;st.profile.learnerType=meta.learnerType;st.profile.role=pf.role.value;st.profile.level=meta.level;st.profile.goal=meta.goal;
       });
-      toast("Profile updated (local)");
+      try{
+        if(!StorageService.get().profile.local){await AuthService.updateProfile(meta);await CloudSyncService.syncNow();toast("Profile saved to your account");}
+        else toast("Profile updated");
+      }catch(err){toast(err.message||"Profile saved locally; cloud update failed");}
       render();
     });
     const so=app.querySelector("#signout-local"); if(so) so.onclick=async()=>{await AuthService.signOut();toast("Signed out");render();};
@@ -816,18 +881,77 @@
       });
       go("/");
     });
-    const af = app.querySelector("#auth-form");
-    if (af) af.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      if(!AuthService.configured){ AuthService.signInLocal(af.name.value,"learner"); toast("Local profile ready"); go("/learn"); return; }
-      const action=e.submitter?.value||"signin";
-      try{
-        if(action==="signup"){const r=await AuthService.signUp(af.name.value,af.email.value,af.password.value);toast(r.session?"Account created and signed in":"Account created. Check your email if confirmation is required.");}
-        else {await AuthService.signIn(af.email.value,af.password.value);toast("Signed in. Syncing your learning progress.");}
-        await CloudSyncService.syncNow(); go("/learn");
-      }catch(err){toast(err.message||"Account request failed");}
+    app.querySelectorAll("[data-auth-tab]").forEach(btn=>btn.onclick=()=>{
+      const target=btn.dataset.authTab;
+      app.querySelectorAll("[data-auth-tab]").forEach(b=>b.classList.toggle("active",b===btn));
+      app.querySelectorAll("[data-auth-pane]").forEach(p=>p.classList.toggle("active",p.dataset.authPane===target));
     });
-    const fp=app.querySelector("#forgot-password"); if(fp) fp.onclick=async()=>{const email=af?.email?.value;if(!email){toast("Enter your email first");return;}try{await AuthService.forgot(email);toast("Password reset email sent");}catch(err){toast(err.message||"Could not send reset email");}};
+    app.querySelectorAll(".password-toggle").forEach(btn=>btn.onclick=()=>{
+      const input=btn.parentElement.querySelector("input");
+      const show=input.type==="password"; input.type=show?"text":"password"; btn.textContent=show?"Hide":"Show";
+    });
+
+    const signinForm=app.querySelector("#signin-form");
+    if(signinForm)signinForm.addEventListener("submit",async e=>{
+      e.preventDefault();
+      const msg=app.querySelector("#signin-message"),submit=signinForm.querySelector(".auth-submit");
+      msg.textContent="";submit.disabled=true;submit.textContent="Signing in…";
+      try{
+        await AuthService.signIn(signinForm.email.value,signinForm.password.value);
+        msg.className="auth-message success";msg.textContent="Signed in successfully. Loading your learning progress…";
+        await CloudSyncService.syncNow();setTimeout(()=>go("/learn"),350);
+      }catch(err){
+        msg.className="auth-message error";
+        msg.textContent=(err.message||"Sign in failed").replace("Invalid login credentials","Email or password is incorrect.");
+      }finally{submit.disabled=false;submit.textContent="Sign In";}
+    });
+
+    const signupForm=app.querySelector("#signup-form");
+    if(signupForm)signupForm.addEventListener("submit",async e=>{
+      e.preventDefault();
+      const msg=app.querySelector("#signup-message"),submit=signupForm.querySelector(".auth-submit");
+      msg.textContent="";
+      if(signupForm.password.value!==signupForm.confirmPassword.value){msg.className="auth-message error";msg.textContent="The two passwords do not match.";return;}
+      submit.disabled=true;submit.textContent="Creating account…";
+      try{
+        const r=await AuthService.signUp({
+          name:signupForm.name.value.trim(),email:signupForm.email.value.trim(),password:signupForm.password.value,
+          learnerType:signupForm.learnerType.value,level:signupForm.level.value,goal:signupForm.goal.value
+        });
+        if(r.session){
+          msg.className="auth-message success";msg.textContent="Account created. Your learning account is ready.";
+          await CloudSyncService.syncNow();setTimeout(()=>go("/learn"),450);
+        }else{
+          msg.className="auth-message success";msg.textContent="Account created. Check your email and confirm your address, then return to sign in.";
+          signupForm.reset();
+        }
+      }catch(err){msg.className="auth-message error";msg.textContent=err.message||"Could not create account.";}
+      finally{submit.disabled=false;submit.textContent="Create Account";}
+    });
+
+    const fp=app.querySelector("#forgot-password");
+    if(fp)fp.onclick=async()=>{
+      const email=signinForm?.email?.value?.trim(),msg=app.querySelector("#signin-message");
+      if(!email){msg.className="auth-message error";msg.textContent="Enter your email address first.";return;}
+      fp.disabled=true;fp.textContent="Sending…";
+      try{await AuthService.forgot(email);msg.className="auth-message success";msg.textContent="Password reset email sent. Check your inbox.";}
+      catch(err){msg.className="auth-message error";msg.textContent=err.message||"Could not send reset email.";}
+      finally{fp.disabled=false;fp.textContent="Forgot password?";}
+    };
+
+    const resetForm=app.querySelector("#reset-password-form");
+    if(resetForm)resetForm.addEventListener("submit",async e=>{
+      e.preventDefault();
+      const msg=app.querySelector("#reset-message"),submit=resetForm.querySelector(".auth-submit");
+      if(resetForm.password.value!==resetForm.confirmPassword.value){msg.className="auth-message error";msg.textContent="The two passwords do not match.";return;}
+      submit.disabled=true;submit.textContent="Updating…";
+      try{await AuthService.updatePassword(resetForm.password.value);msg.className="auth-message success";msg.textContent="Password updated. You can continue learning.";setTimeout(()=>go("/learn"),600);}
+      catch(err){msg.className="auth-message error";msg.textContent=err.message||"Could not update password.";}
+      finally{submit.disabled=false;submit.textContent="Update Password";}
+    });
+
+    const accountSignout=app.querySelector("#account-signout");
+    if(accountSignout)accountSignout.onclick=async()=>{await AuthService.signOut();toast("Signed out");render();};
   }
 
   function searchQueryFromUrl() {
@@ -865,6 +989,7 @@
       case "onboarding": html = viewOnboardingForm(); break;
       case "signin":
       case "account": html = viewAuth(); break;
+      case "reset-password": html = viewResetPassword(); break;
       case "certificate": html = viewCertificate(parts[1]); break;
       default: html = viewHome();
     }
@@ -885,6 +1010,7 @@
   }
 
   window.addEventListener("hashchange", render);
+  window.addEventListener("ethan:auth-change",()=>{const r=parseHash().parts[0]||"home";if(["signin","account","profile"].includes(r))render();});
   if (!location.hash) {
     if (!StorageService.get().onboarded) location.hash = "#/welcome";
     else location.hash = "#/";

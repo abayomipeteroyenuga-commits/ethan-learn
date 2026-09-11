@@ -1,4 +1,4 @@
-const CACHE="ethan-learn-v4.0-world-class-expanded";
+const CACHE="ethan-learn-v4.1-supabase-auth";
 const SHELL=["/","/index.html","/manifest.webmanifest","/assets/css/app.css","/assets/ethan-learn-logo.svg","/assets/icons/icon-32.png","/assets/icons/icon-192.png","/assets/icons/icon-512.png","/data/subjects.js","/data/courses.js","/data/expanded-academic-catalog.js","/data/full-content.js","/data/accounting-comprehensive.js","/data/practical-assessment.js","/data/global-core-curriculum.js","/data/nigeria-curriculum.js","/data/comprehensive-topic-coverage.js","/data/learningPaths.js","/config.js","/js/storage.js","/js/cloud-sync.js","/js/auth.js","/js/progress.js","/js/search.js","/js/tutor.js","/js/services-ai.js","/js/install.js","/js/voice.js","/js/practice-lab.js","/js/app.js","/js/world-class.js"];
 self.addEventListener("install",e=>e.waitUntil(caches.open(CACHE).then(async c=>{await Promise.allSettled(SHELL.map(u=>c.add(u)));}).then(()=>self.skipWaiting())));
 self.addEventListener("activate",e=>e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==CACHE).map(x=>caches.delete(x)))).then(()=>self.clients.claim())));
