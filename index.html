@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0B3A6E" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="ETHAN Learn" />
+  <meta name="description" content="ETHAN Learn — Learn. Practice. Grow. Knowledge and skills for everyone. A product of Ethan Digital Academy." />
+  <title>ETHAN Learn</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="assets/icons/icon-32.png" sizes="32x32" />
+  <link rel="apple-touch-icon" href="assets/icons/icon-180.png" />
+  <link rel="stylesheet" href="assets/css/app.css" />
+</head>
+<body>
+  <a class="skip" href="#app">Skip to content</a>
+  <div id="install-banner" class="install-banner hidden">
+    <span>Install ETHAN Learn for faster access.</span>
+    <button class="btn btn-primary" id="install-banner-btn" type="button">Install</button>
+  </div>
+  <header class="app-header">
+    <div class="header-inner">
+      <button class="btn icon-btn menu-toggle" id="menu-toggle" type="button" aria-label="Open navigation">☰</button>
+      <a class="logo" href="#/" data-nav="home">
+        <img src="assets/ethan-learn-logo.svg" width="38" height="38" alt="" />
+        <span class="brand-lockup"><strong>ETHAN Learn</strong><small>Learn · Practice · Grow</small></span>
+      </a>
+      <nav class="nav-desktop" aria-label="Primary">
+        <a href="#/" data-nav="home">Home</a>
+        <a href="#/explore" data-nav="explore">Courses</a>
+        <a href="#/nigeria" data-nav="nigeria">Nigeria</a>
+        <a href="#/curriculum" data-nav="curriculum">Global</a>
+        <a href="#/learn" data-nav="learn">My Learning</a>
+        <a href="#/practice" data-nav="practice">Practice</a>
+        <details class="nav-more">
+          <summary>More</summary>
+          <div class="nav-popover">
+            <a href="#/subjects">Subjects</a>
+            <a href="#/paths">Learning Paths</a>
+            <a href="#/dashboard">Dashboard</a>
+            <a href="#/teachers">For Teachers</a>
+            <a href="#/settings">Settings</a>
+            <a href="#/about">About</a>
+          </div>
+        </details>
+      </nav>
+      <form class="search-mini" id="header-search-form">
+        <span aria-hidden="true">⌕</span>
+        <input id="header-q" type="search" placeholder="Search courses, subjects and skills…" aria-label="Search courses" />
+      </form>
+      <div class="header-actions">
+        <a class="btn btn-ghost" href="#/signin">Sign In</a>
+        <a class="btn btn-primary" href="#/account">Account</a>
+      </div>
+    </div>
+  </header>
+  <div class="mobile-drawer" id="mobile-drawer" aria-hidden="true">
+    <div class="drawer-panel">
+      <div class="drawer-head"><strong>ETHAN Learn</strong><button class="btn icon-btn" id="drawer-close" type="button" aria-label="Close menu">×</button></div>
+      <div class="drawer-group"><span>LEARN</span>
+        <a href="#/">Home</a><a href="#/explore">Courses</a><a href="#/subjects">Subjects</a>
+        <a href="#/nigeria">Nigeria Curriculum</a><a href="#/curriculum">Global Curriculum</a><a href="#/paths">Learning Paths</a>
+      </div>
+      <div class="drawer-group"><span>MY WORKSPACE</span>
+        <a href="#/dashboard">Dashboard</a><a href="#/learn">My Learning</a><a href="#/practice">Practice</a><a href="#/teachers">For Teachers</a>
+      </div>
+      <div class="drawer-group"><span>ACCOUNT</span>
+        <a href="#/profile">Profile</a><a href="#/settings">Settings</a><a href="#/about">About</a>
+      </div>
+    </div>
+  </div>
+  <main id="app" tabindex="-1"></main>
+  <nav class="bottom-nav" aria-label="Mobile">
+    <a href="#/" data-nav="home"><span>⌂</span>Home</a>
+    <a href="#/explore" data-nav="explore"><span>⌕</span>Courses</a>
+    <a href="#/learn" data-nav="learn"><span>▣</span>Learn</a>
+    <a href="#/practice" data-nav="practice"><span>✓</span>Practice</a>
+    <a href="#/profile" data-nav="profile"><span>○</span>Profile</a>
+  </nav>
+  <script src="data/subjects.js"></script>
+  <script src="data/courses.js"></script>
+  <script src="data/expanded-academic-catalog.js"></script>
+  <script src="data/full-content.js"></script>
+  <script src="data/accounting-comprehensive.js"></script>
+  <script src="data/practical-assessment.js"></script>
+  <script src="data/global-core-curriculum.js"></script>
+  <script src="data/nigeria-curriculum.js"></script>
+  <script src="data/comprehensive-topic-coverage.js"></script>
+  <script src="data/learningPaths.js"></script>
+  <script src="config.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/cloud-sync.js"></script>
+  <script src="js/progress.js"></script>
+  <script src="js/search.js"></script>
+  <script src="js/tutor.js"></script>
+  <script src="js/services-ai.js"></script>
+  <script src="js/install.js"></script>
+  <script src="js/voice.js"></script>
+  <script src="js/practice-lab.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/world-class.js"></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", function () {
+        navigator.serviceWorker.register("sw.js").catch(function () {
+          console.warn("Service worker not registered");
+        });
+      });
+    }
+  </script>
+  <button id="voiceFab" data-voice-toggle aria-label="Toggle voice commands" title="Voice commands">🎙 Voice</button>
+<script id="boot-watchdog">setTimeout(function(){var a=document.getElementById("app");if(a&&!a.textContent.trim()){a.innerHTML='<div class="wrap"><div class="error-state"><h1>ETHAN Learn could not start</h1><p>Please refresh once. If you recently updated the app, clear the old site cache/service worker and reload.</p></div></div>'; }},5000);</script>
+<noscript><div class="wrap"><h1>JavaScript is required to run ETHAN Learn.</h1></div></noscript>
+</body>
+</html>

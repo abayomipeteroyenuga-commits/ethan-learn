@@ -1,0 +1,15 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ETHAN Voice Test</title>
+<style>body{font-family:system-ui;max-width:760px;margin:40px auto;padding:20px}button{padding:12px 16px;margin:6px;font-size:16px}.box{padding:16px;border:1px solid #ddd;border-radius:12px;margin:15px 0}</style></head>
+<body><h1>ETHAN Voice Test</h1><div class="box" id="status">Loading…</div>
+<button onclick="ETHAN_VOICE.speak('ETHAN Voice audio test. If you can hear this, speech playback is working.')">🔊 Test Speaker</button>
+<button onclick="ETHAN_VOICE.enable()">🎙 Test Microphone</button>
+<button onclick="ETHAN_VOICE.disable()">Stop</button>
+<p>For microphone testing, allow microphone permission when your browser asks. Voice recognition normally requires HTTPS on the deployed site.</p>
+<script src="js/voice.js"></script><script>
+setTimeout(()=>{const s=ETHAN_VOICE.getState();document.getElementById('status').innerHTML=
+'<b>Speech recognition:</b> '+s.supported+'<br><b>Language:</b> '+s.language+'<br><b>Voices loaded:</b> '+s.voices;},600);
+</script><hr><h2>Automatic Narration Test</h2>
+<button onclick="ETHAN_VOICE.speak('Automatic course narration is working correctly.')">▶ Test Narration</button>
+<button onclick="ETHAN_VOICE.setAutoNarrate(true)">Auto Narration ON</button>
+<button onclick="ETHAN_VOICE.setAutoNarrate(false)">Auto Narration OFF</button>
+</body></html>
