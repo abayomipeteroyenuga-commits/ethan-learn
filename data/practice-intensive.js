@@ -85,16 +85,27 @@ function kind(c){
  if(/chemistry/.test(z))return"chem";
  return null;
 }
-let audit={courses:0,lessons:0,questions:0,byType:{}};
+let audit={courses:0,lessons:0,questions:0,byType:{},lazy:true};
 for(const c of C){
  const k=kind(c);if(!k)continue;
  audit.courses++;audit.byType[k]=(audit.byType[k]||0)+1;
- for(const m of (c.modules||[]))for(const l of (m.lessons||[])){
-   const key=c.id+"|"+l.id+"|"+l.title, title=l.title||m.title||c.title;
-   let block=k==="further"?further(title,key):k==="math"?( /calculus|matrix|vector|differential|integral|complex|coordinate geometry|trigonomet/i.test(low(title))?further(title,key):(/algebra|equation|factor|polynomial|quadratic|simultaneous/i.test(low(title))?algebra(title,key):arithmetic(title,key))):k==="account"?accounting(title,key):k==="physics"?physics(title,key):chemistry(title,key);
-   l.body=(l.body||"")+block;l.practiceIntensiveVersion="4.7";audit.lessons++;audit.questions+=15;
- }
- c.practiceIntensiveVersion="4.7";
+ for(const m of (c.modules||[]))for(const l of (m.lessons||[])){audit.lessons++;audit.questions+=15;}
 }
+function practiceFor(c,l){
+ const k=kind(c);if(!k||!l)return "";
+ const key=c.id+"|"+l.id+"|"+l.title, title=l.title||c.title;
+ if(k==="further")return further(title,key);
+ if(k==="math"){
+   const t=low(title);
+   if(/calculus|matrix|vector|differential|integral|complex|coordinate geometry|trigonomet/.test(t))return further(title,key);
+   if(/algebra|equation|factor|polynomial|quadratic|simultaneous/.test(t))return algebra(title,key);
+   return arithmetic(title,key);
+ }
+ if(k==="account")return accounting(title,key);
+ if(k==="physics")return physics(title,key);
+ if(k==="chem")return chemistry(title,key);
+ return "";
+}
+window.EthanPracticeIntensive={render:practiceFor,kind};
 window.ETHAN_PRACTICE_INTENSIVE_AUDIT=audit;
 })();

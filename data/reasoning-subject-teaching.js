@@ -82,19 +82,18 @@ let courseCount=0,lessonCount=0,byType={};
 for(const c of courses){
  const type=classify(c); if(!type) continue;
  courseCount++; byType[type]=(byType[type]||0)+1;
- c.reasoningTeachingVersion="4.5";
- c.reasoningSequence=["Subject","Topic","Explanation","Rule/Method","Worked Example","Guided Practice","Independent Work","Real Practical/Case","Quiz","Mastery Check"];
- for(const m of (c.modules||[])) for(const l of (m.lessons||[])){
-   let block="";
-   if(type==="accounting") block=accounting(l.title);
-   else if(type==="economics") block=economics(l.title);
-   else if(type==="commerce") block=commerce(l.title);
-   else if(type==="finance") block=finance(l.title);
-   else if(type==="logic") block=logic(l.title);
-   else if(type==="science") block=science(l.title,c);
-   l.body=(l.body||"")+block;
-   l.reasoningTeachingVersion="4.5"; lessonCount++;
- }
+ for(const m of (c.modules||[])) for(const l of (m.lessons||[])) lessonCount++;
 }
-window.ETHAN_REASONING_SUBJECT_AUDIT={courseCount,lessonCount,byType};
+function renderFor(c,l){
+ const type=classify(c); if(!type||!l)return "";
+ if(type==="accounting") return accounting(l.title);
+ if(type==="economics") return economics(l.title);
+ if(type==="commerce") return commerce(l.title);
+ if(type==="finance") return finance(l.title);
+ if(type==="logic") return logic(l.title);
+ if(type==="science") return science(l.title,c);
+ return "";
+}
+window.EthanReasoningTeaching={render:renderFor,classify};
+window.ETHAN_REASONING_SUBJECT_AUDIT={courseCount,lessonCount,byType,lazy:true};
 })();

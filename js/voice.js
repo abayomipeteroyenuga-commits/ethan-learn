@@ -76,15 +76,19 @@ function readableLessonElements(){
   const body=document.querySelector(".lesson-body");
   if(!body)return [];
   const title=body.querySelector("h1");
-  const lesson=body.querySelector(".lesson-html");
   const nodes=[];
   if(title)nodes.push(title);
-  if(lesson){
-    const candidates=[...lesson.querySelectorAll("h2,h3,h4,p,li,.math-line,.worked-example > p,.do-now-box,td,th")];
-    const seen=new Set();
+  const blocks=[...body.querySelectorAll(":scope > .lesson-html,:scope > .deep-teaching-feature,:scope > .deep-card,:scope > .reasoning-lab,:scope > .intensive-practice,:scope > .do-it-now")];
+  const seen=new Set();
+  for(const block of blocks){
+    const candidates=[...block.querySelectorAll("h2,h3,h4,p,li,.math-line,td,th")];
+    if(!candidates.length){
+      const t=clean(block.innerText||block.textContent||"");
+      if(t&&!seen.has(block)){seen.add(block);nodes.push(block)}
+      continue;
+    }
     for(const el of candidates){
       if(seen.has(el))continue;
-      // Skip nested nodes if a closer semantic candidate already represents same line only when empty.
       const t=clean(el.innerText||el.textContent||"");
       if(!t)continue;
       seen.add(el);nodes.push(el);
@@ -219,6 +223,7 @@ function updateCommands(){
   document.querySelectorAll("[data-voice-toggle],#settings-voice-toggle,#voiceFab").forEach(x=>{
     x.setAttribute("aria-pressed",commandsEnabled?"true":"false");
     if(x.id==="voiceFab")x.textContent=commandsEnabled?"🎙 Listening":"🎙 Voice";
+    if(x.id==="settings-voice-toggle")x.textContent=commandsEnabled?"Deactivate Voice":"Activate Voice";
   });
 }
 function makeRecognition(){

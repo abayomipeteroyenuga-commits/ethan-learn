@@ -15,12 +15,16 @@
     if (!s.enrolled[courseId].completedAt) s.enrolled[courseId].completedAt = Date.now();
     return true;
   }
+  function validCourse(id){ return (g.ETHAN_COURSES||[]).find(c=>c.id===id)||null; }
+  function validLesson(course,lid){ return course && (course.modules||[]).some(m=>(m.lessons||[]).some(l=>l.id===lid)); }
+  function passedQuiz(s,cid,lid){ const a=s.quizAttempts[cid+":"+lid]||[]; return a.some(x=>Number(x.pct)>=60); }
   g.ProgressService = {
     weekKey,
-    enroll(courseId) { StorageService.update(s=>{ if(!s.enrolled[courseId]) s.enrolled[courseId]={at:Date.now(),status:"in-progress"}; }); },
-    saveCourse(courseId) { StorageService.update(s=>{ if(!s.savedCourses.includes(courseId)) s.savedCourses.push(courseId); }); },
+    enroll(courseId) { if(!validCourse(courseId)) return false; StorageService.update(s=>{ if(!s.enrolled[courseId]) s.enrolled[courseId]={at:Date.now(),status:"in-progress"}; else if(s.enrolled[courseId].status!=="completed") s.enrolled[courseId].status="in-progress"; }); return true; },
+    saveCourse(courseId) { if(!validCourse(courseId)) return false; StorageService.update(s=>{ if(!s.savedCourses.includes(courseId)) s.savedCourses.push(courseId); }); return true; },
     unsaveCourse(courseId) { StorageService.update(s=>{ s.savedCourses=s.savedCourses.filter(id=>id!==courseId); }); },
     markLesson(courseId,lessonId,minutes) {
+      const course=validCourse(courseId); if(!validLesson(course,lessonId)) return false;
       let newlyCompleted=false;
       StorageService.update(s=>{
         const key=courseId+":"+lessonId;
@@ -39,14 +43,21 @@
     },
     lessonDone(courseId,lessonId){ return !!StorageService.get().completedLessons[courseId+":"+lessonId]; },
     courseLessons(course){ const a=[]; (course?.modules||[]).forEach(m=>(m.lessons||[]).forEach(l=>a.push(l))); return a; },
+    nextStep(course){
+      if(!course)return null; const s=StorageService.get(), ls=this.courseLessons(course);
+      const incomplete=ls.find(l=>!s.completedLessons[course.id+":"+l.id]); if(incomplete)return incomplete;
+      return ls.find(l=>l.quiz?.length && !passedQuiz(s,course.id,l.id))||null;
+    },
     courseProgress(course){ const ls=this.courseLessons(course); if(!ls.length)return 0; const done=StorageService.get().completedLessons; const n=ls.reduce((t,l)=>t+(done[course.id+":"+l.id]?1:0),0); return Math.round(n/ls.length*100); },
     courseComplete(courseId,state){
       const c=(g.ETHAN_COURSES||[]).find(x=>x.id===courseId); if(!c)return false;
       const s=state||StorageService.get(), ls=this.courseLessons(c); if(!ls.length)return false;
       if(!ls.every(l=>s.completedLessons[courseId+":"+l.id]))return false;
-      return ls.filter(l=>l.quiz?.length).every(l=>{ const a=s.quizAttempts[courseId+":"+l.id]||[]; return a.some(x=>x.pct>=60); });
+      return ls.filter(l=>l.quiz?.length).every(l=>passedQuiz(s,courseId,l.id));
     },
     recordQuiz(courseId,lessonId,pct){
+      const course=validCourse(courseId); if(!validLesson(course,lessonId)) return false;
+      pct=Math.max(0,Math.min(100,Math.round(Number(pct)||0)));
       StorageService.update(s=>{
         const k=courseId+":"+lessonId; s.quizAttempts[k]=s.quizAttempts[k]||[]; s.quizAttempts[k].push({at:Date.now(),pct});
         if(s.quizAttempts[k].length>20)s.quizAttempts[k]=s.quizAttempts[k].slice(-20);
@@ -54,6 +65,7 @@
         s.recent.unshift({type:"quiz",courseId,lessonId,pct,at:Date.now()}); s.recent=s.recent.slice(0,30);
         finalize(s,courseId);
       });
+      return true;
     },
     bestScore(courseId,lessonId){ const a=StorageService.get().quizAttempts[courseId+":"+lessonId]||[]; return a.length?Math.max(...a.map(x=>x.pct)):null; },
     canCertificate(courseId){ return this.courseComplete(courseId); }

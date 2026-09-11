@@ -136,7 +136,7 @@
 
   function continueCards() {
     const ids = Object.keys(StorageService.get().enrolled);
-    const cards = ids.map(courseById).filter(Boolean).filter((c) => ProgressService.courseProgress(c) < 100).map(courseCard);
+    const cards = ids.map(courseById).filter(Boolean).filter((c) => !ProgressService.canCertificate(c.id)).map(courseCard);
     return cards.join("");
   }
 
@@ -269,6 +269,9 @@
         <h1>${esc(lesson.title)}</h1>
         <p class="meta">${lesson.minutes} min · ${esc(found.module.title)}</p>
         <div class="lesson-html">${lesson.body}</div>
+        ${window.EthanDeepTeaching?.render?.(c,lesson)||""}
+        ${window.EthanReasoningTeaching?.render?.(c,lesson)||""}
+        ${window.EthanPracticeIntensive?.render?.(c,lesson)||""}
         ${window.EthanPracticeLab?.render?.(c,lesson)||""}
         <div class="nav-lesson">
           ${prev ? `<a class="btn" href="#/lesson/${c.id}/${prev.id}">← Previous Lesson</a>` : ""}
@@ -762,8 +765,21 @@
         if (fLvl.value) list = list.filter((c) => c.level === fLvl.value);
         if (fSort.value === "az") list.sort((a,b)=>a.title.localeCompare(b.title));
         if (fSort.value === "new") list = list.slice().reverse();
-        app.querySelector("#explore-grid").innerHTML = list.slice(0,48).map(courseCard).join("") || emptyExplore();
-        bindGo(app.querySelector("#explore-grid"));
+        const grid=app.querySelector("#explore-grid");
+        grid.innerHTML = list.slice(0,48).map(courseCard).join("") || emptyExplore();
+        bindGo(grid);
+        const oldWrap=app.querySelector(".load-more-wrap");
+        if(oldWrap) oldWrap.remove();
+        if(list.length>48){
+          const wrap=document.createElement("div");wrap.className="load-more-wrap";
+          wrap.innerHTML='<button class="btn" id="load-more-courses">Show more courses</button>';
+          grid.after(wrap);
+          let shown=48;
+          wrap.querySelector("button").onclick=()=>{
+            shown+=48; grid.innerHTML=list.slice(0,shown).map(courseCard).join("")||emptyExplore(); bindGo(grid);
+            if(shown>=list.length)wrap.remove();
+          };
+        }
       };
       fSub.onchange = fLvl.onchange = fSort.onchange = apply;
     }
@@ -772,11 +788,12 @@
       start.onclick = () => {
         if(!isSignedIn()){go("/signin?next="+encodeURIComponent("course/"+parts[1]));return;}
         const id = parts[1];
+        const wasEnrolled=!!StorageService.get().enrolled[id];
         ProgressService.enroll(id);
         const c = courseById(id);
-        const first = ProgressService.courseLessons(c)[0];
-        toast("Enrolled");
-        if (first) go("/lesson/" + id + "/" + first.id);
+        const step = ProgressService.nextStep(c) || ProgressService.courseLessons(c)[0];
+        toast(wasEnrolled ? "Continuing course" : "Enrolled");
+        if (step) go("/lesson/" + id + "/" + step.id);
       };
     }
     const saveC = app.querySelector("#save-course");
@@ -829,8 +846,7 @@
         tf.reset();
       });
     }
-    const voiceToggle = app.querySelector("#lesson-voice-toggle") || app.querySelector("#settings-voice-toggle");
-    if (voiceToggle && window.VoiceService) voiceToggle.onclick = () => { window.VoiceService.toggle(); voiceToggle.textContent = window.VoiceService.active ? "Deactivate Voice" : "Activate Voice"; };
+    // Voice toggle is handled centrally by js/voice.js to avoid duplicate click handlers.
     const stopVoiceBtn = app.querySelector("#stop-voice");
     if (stopVoiceBtn && window.VoiceService) stopVoiceBtn.onclick = () => window.VoiceService.stopSpeaking?.();
     const voiceHelpBtn = app.querySelector("#voice-help-btn");
@@ -928,7 +944,7 @@
         msg.className="auth-message success";msg.textContent="Signed in successfully. Loading your learning progress…";
         await CloudSyncService.syncNow();
         const next=new URLSearchParams((location.hash.split("?")[1]||"")).get("next");
-        setTimeout(()=>go(next ? decodeURIComponent(next) : "/learn"),350);
+        setTimeout(()=>go(next || "/learn"),350);
       }catch(err){
         msg.className="auth-message error";
         msg.textContent=(err.message||"Sign in failed").replace("Invalid login credentials","Email or password is incorrect.");
@@ -951,7 +967,7 @@
           msg.className="auth-message success";msg.textContent="Account created. Your learning account is ready.";
           await CloudSyncService.syncNow();
           const next=new URLSearchParams((location.hash.split("?")[1]||"")).get("next");
-          setTimeout(()=>go(next ? decodeURIComponent(next) : "/learn"),450);
+          setTimeout(()=>go(next || "/learn"),450);
         }else{
           msg.className="auth-message success";msg.textContent="Account created. Check your email and confirm your address, then return to sign in.";
           signupForm.reset();
@@ -1041,6 +1057,7 @@
     try{window.scrollTo(0,0);}catch(_){}
   }
 
+  try{StorageService.compactCatalogRefs?.();}catch(e){console.warn("Catalog reference cleanup skipped",e);}
   window.addEventListener("hashchange", render);
   window.addEventListener("ethan:auth-change",()=>{const r=parseHash().parts[0]||"home";if(["signin","account","profile"].includes(r))render();});
   if (!location.hash) {

@@ -40,6 +40,21 @@
     set(patch) { state = mergeState(Object.assign({}, state, patch || {})); save(); try{dispatchEvent(new Event("ethan-storage-change"));}catch(_){} return state; },
     update(fn) { if (typeof fn === "function") fn(state); state = mergeState(state); save(); try{dispatchEvent(new Event("ethan-storage-change"));}catch(_){} return state; },
     reset() { state = defaultState(); save(); },
+    compactCatalogRefs() {
+      const courses=new Set((g.ETHAN_COURSES||[]).map(c=>c.id));
+      if(!courses.size)return state;
+      const lessons=new Map((g.ETHAN_COURSES||[]).map(c=>[c.id,new Set((c.modules||[]).flatMap(m=>(m.lessons||[]).map(l=>l.id)))]));
+      const validPair=k=>{const i=String(k).indexOf(":");if(i<1)return false;const cid=k.slice(0,i),lid=k.slice(i+1);return courses.has(cid)&&lessons.get(cid)?.has(lid)};
+      for(const id of Object.keys(state.enrolled||{}))if(!courses.has(id))delete state.enrolled[id];
+      state.savedCourses=(state.savedCourses||[]).filter(id=>courses.has(id));
+      for(const k of Object.keys(state.completedLessons||{}))if(!validPair(k))delete state.completedLessons[k];
+      for(const k of Object.keys(state.quizAttempts||{}))if(!validPair(k))delete state.quizAttempts[k];
+      for(const k of Object.keys(state.notes||{}))if(!validPair(k))delete state.notes[k];
+      state.bookmarks=(state.bookmarks||[]).filter(validPair);
+      state.flashcards=(state.flashcards||[]).filter(x=>!x.courseId||!x.lessonId||(courses.has(x.courseId)&&lessons.get(x.courseId)?.has(x.lessonId)));
+      state.recent=(state.recent||[]).filter(x=>!x.courseId||(courses.has(x.courseId)&&(!x.lessonId||lessons.get(x.courseId)?.has(x.lessonId))));
+      save(); return state;
+    },
     exportData() { return JSON.parse(JSON.stringify(state)); }
   };
 })(window);

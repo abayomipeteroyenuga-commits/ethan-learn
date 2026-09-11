@@ -244,23 +244,19 @@ function enrichment(course,lesson){
  return genericBlock(title);
 }
 
-let lessonCount=0, enriched=0, simultaneousCount=0;
-courses.forEach(course=>{
- (course.modules||[]).forEach(mod=>{
-   (mod.lessons||[]).forEach(lesson=>{
-     lessonCount++;
-     if(lesson.deepTeachingVersion==="4.3") return;
-     const block=enrichment(course,lesson);
-     if(block){
-       lesson.body=(lesson.body||"")+block;
-       lesson.deepTeachingVersion="4.3";
-       lesson.teachingMethod=["Explain","Worked Example","Guided Practice","Independent Practice","Real Application","Check & Reflect"];
-       enriched++;
-       if(lower(lesson.title).includes("simultaneous")) simultaneousCount++;
-     }
-   });
- });
- course.deepTeachingVersion="4.3";
-});
-window.ETHAN_DEEP_TEACHING_AUDIT={courses:courses.length,lessons:lessonCount,enriched,simultaneousLessons:simultaneousCount};
+let lessonCount=0, simultaneousCount=0;
+for(const course of courses){
+  for(const mod of (course.modules||[])) for(const lesson of (mod.lessons||[])){
+    lessonCount++;
+    if(lower(lesson.title).includes("simultaneous")) simultaneousCount++;
+  }
+}
+window.EthanDeepTeaching={
+  render(course,lesson){
+    if(!course||!lesson)return "";
+    return enrichment(course,lesson)||"";
+  },
+  method:["Explain","Worked Example","Guided Practice","Independent Practice","Real Application","Check & Reflect"]
+};
+window.ETHAN_DEEP_TEACHING_AUDIT={courses:courses.length,lessons:lessonCount,enriched:lessonCount,simultaneousLessons:simultaneousCount,lazy:true};
 })();
